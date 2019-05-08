@@ -9,32 +9,31 @@ class iList(UserList):
             for item in initlist:
                 d.append(item)
             return super().__init__(d)
-        return super().__init__(initlist.copy()) # append used for: range -> list
+        return super().__init__(initlist)
 
-    def insert(self, index, item):
-        cpy = self.data.copy()
-        cpy.insert(index, item)
-        return cpy
-
-    def pop(self, index):
-        cpy = self.data.copy()
-        cpy.pop(index)
-        return cpy
-
-    def clear(self):
-        return iList()
-
-    def sort(self, key=None, reverse=False):
-        cpy = self.data.copy()
-        cpy.sort(key, reverse)
-        return cpy
-
-    def reverse(self):
-        cpy = self.data.copy()
-        cpy.reverse()
-        return cpy
-
+    def _immutable_decorator(func):
+        def f(self, *args, **kwargs):
+            cpy = cpy = self.data.copy()
+            method = getattr(cpy, func.__name__)
+            method(*args, **kwargs)
+            return cpy
+        return f
     
+    @_immutable_decorator
+    def insert(self, i, item):
+        return super().insert(i, item)
+
+    @_immutable_decorator
+    def pop(self, i):
+        return super().pop(i)
+
+    @_immutable_decorator
+    def sort(self, *args, **kwds):
+        return super().sort(*args, **kwds)
+
+    @_immutable_decorator
+    def reverse(self):
+        return super().reverse()
 
     def append(self, item, flat=True):
         # flat -> [1,2,3].append([5,6]) == [1,2,3,5,6]; [1,2,3].append((5,6)) == [1,2,3,5,6]
@@ -64,4 +63,6 @@ class iList(UserList):
     def __sub__(self, other):
         return self.remove(other)
 
-    
+
+    def clear(self):
+        return iList()
