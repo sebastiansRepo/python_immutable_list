@@ -16,7 +16,7 @@ class iList(UserList):
             cpy = cpy = self.data.copy()
             method = getattr(cpy, func.__name__)
             method(*args, **kwargs)
-            return cpy
+            return iList(cpy)
         return f
     
     @_immutable_decorator
@@ -43,18 +43,18 @@ class iList(UserList):
             if flat:
                 for i in item:
                     cpy.append(i)
-                return cpy
+                return iList(cpy)
             else:
                 cpy.append(0) # make list bigger
                 cpy[-1] = item
-                return cpy
+                return iList(cpy)
         cpy.append(item)
-        return cpy
+        return iList(cpy)
 
     def remove(self, item):
         cpy = self.data.copy()
         cpy.remove(item)
-        return cpy
+        return iList(cpy)
 
     def __add__(self, other):
         return self.append(other)
